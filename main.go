@@ -213,9 +213,10 @@ func addInGit() {
         //Push the code to the remote
         err = r.Push(&git.PushOptions{
                 RemoteName: "origin",
-                Auth:       auth,
+//                Auth:       auth,
         })
         if err != nil {
+                fmt.Printf("%v", err)		
                 return 
         }
         fmt.Println("Remote updated.", filePath)
