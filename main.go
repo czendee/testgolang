@@ -151,20 +151,27 @@ func getAddFileGit(c *gin.Context) {
 
 //func addInGit(filenombre string )  bolean{
 func addInGit() {
+	
+	fmt.Println("addInGit   delcare in memory")
+	
         storer = memory.NewStorage()
         fs = memfs.New()
-
+        fmt.Println("addInGit   set auth")
         // Authentication
         auth := &httpgit.BasicAuth{
                 Username: "youtochibots",
                 Password: "your-git-pass",
         }
 
+	fmt.Println("addInGit   define github repository and login ")
         repository := "https://github.com/youtochibots/bot"
         r, err := git.Clone(storer, fs, &git.CloneOptions{
                 URL:  repository,
                 Auth: auth,
         })
+	
+	fmt.Println("addInGit   login in ok")
+	
         if err != nil {
                 fmt.Printf("%v", err)
                 return 
@@ -177,6 +184,7 @@ func addInGit() {
                 return 
         }
 
+	fmt.Println("addInGit   create new file")
         // Create new file
         filePath := "my-new-ififif.txt"
         newFile, err := fs.Create(filePath)
@@ -189,15 +197,19 @@ func addInGit() {
         // Run git status before adding the file to the worktree
         fmt.Println(w.Status())
 
+	fmt.Println("addInGit   git add the file")
         // git add $filePath
         w.Add(filePath)
 
         // Run git status after the file has been added adding to the worktree
         fmt.Println(w.Status())
 
+	fmt.Println("addInGit   git commit")
         // git commit -m $message
         w.Commit("Added my new file", &git.CommitOptions{})
 
+	
+	fmt.Println("addInGit   git push")
         //Push the code to the remote
         err = r.Push(&git.PushOptions{
                 RemoteName: "origin",
