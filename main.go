@@ -158,11 +158,11 @@ func addInGit() {
         fs = memfs.New()
         fmt.Println("addInGit   set auth")
         // Authentication
-        auth := &httpgit.BasicAuth{
+/*        auth := &httpgit.BasicAuth{
                 Username: "youtochibots",
                 Password: "Impos",
         }
-
+*/
 	fmt.Println("addInGit   define github repository and login ")
         repository := "https://github.com/youtochibots/bot.git"
         r, err := git.Clone(storer, fs, &git.CloneOptions{
