@@ -167,7 +167,7 @@ func addInGit() {
         repository := "https://github.com/youtochibots/bot.git"
         r, err := git.Clone(storer, fs, &git.CloneOptions{
                 URL:  repository,
-                Auth: auth,
+//                Auth: auth,
         })
 	
 	fmt.Println("addInGit   login in ok")
