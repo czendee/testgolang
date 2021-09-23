@@ -16,7 +16,7 @@ import (
         billy "github.com/go-git/go-billy/v5"
         memfs "github.com/go-git/go-billy/v5/memfs"
         git "github.com/go-git/go-git/v5"
-        httpgit "github.com/go-git/go-git/v5/plumbing/transport/http"
+//        httpgit "github.com/go-git/go-git/v5/plumbing/transport/http"
         memory "github.com/go-git/go-git/v5/storage/memory"
 
 )
