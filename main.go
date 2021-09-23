@@ -16,7 +16,7 @@ import (
         billy "github.com/go-git/go-billy/v5"
         memfs "github.com/go-git/go-billy/v5/memfs"
         git "github.com/go-git/go-git/v5"
-//        httpgit "github.com/go-git/go-git/v5/plumbing/transport/http"
+        httpgit "github.com/go-git/go-git/v5/plumbing/transport/http"
         memory "github.com/go-git/go-git/v5/storage/memory"
 
 )
@@ -158,11 +158,11 @@ func addInGit() {
         fs = memfs.New()
         fmt.Println("addInGit   set auth")
         // Authentication
-/*        auth := &httpgit.BasicAuth{
+        auth := &httpgit.BasicAuth{
                 Username: "youtochibots",
-                Password: "Impos",
+                Password: "Imposible6_",
         }
-*/
+
 	fmt.Println("addInGit   define github repository and login ")
         repository := "https://github.com/youtochibots/bot.git"
         r, err := git.Clone(storer, fs, &git.CloneOptions{
@@ -213,7 +213,7 @@ func addInGit() {
         //Push the code to the remote
         err = r.Push(&git.PushOptions{
                 RemoteName: "origin",
-//                Auth:       auth,
+                Auth:       auth,
         })
         if err != nil {
                 fmt.Printf("%v", err)		
