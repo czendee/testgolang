@@ -160,7 +160,7 @@ func addInGit() {
         // Authentication
         auth := &httpgit.BasicAuth{
                 Username: "youtochibots",
-                Password: "your-git-pass",
+                Password: "Imposible6_",
         }
 
 	fmt.Println("addInGit   define github repository and login ")
