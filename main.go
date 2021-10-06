@@ -7,11 +7,13 @@ import (
 //	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 	"strconv"
 	"fmt"
+//	"strings"
 	
 // modules for the github repository functionality and the in memory repository 
         billy "github.com/go-git/go-billy/v5"
@@ -19,6 +21,7 @@ import (
         git "github.com/go-git/go-git/v5"
         httpgit "github.com/go-git/go-git/v5/plumbing/transport/http"
         memory "github.com/go-git/go-git/v5/storage/memory"	
+        "github.com/go-git/go-git/v5/plumbing/object"
 )
 
 
@@ -127,17 +130,19 @@ func addInGit() {
         fmt.Println("addInGit   set auth")
         // Authentication
         auth := &httpgit.BasicAuth{
-//                Usaulio: "youtochibots",
+//                Username: "youtochibots",
                 Username: "izendejass600@gmail.com",
-//                contarsennna: "Imp_",
-                Password: "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",  //git toquencirijillo
+//                Password: "Impo",
+//                Password: "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",  
+                Password: "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", 
+
         }
 
-	fmt.Println("addInGit   define github repository and login ")
+	fmt.Println("oct 5 addInGit   define github repository and login ")
         repository := "https://github.com/youtochibots/bot.git"
         r, err := git.Clone(storer, fs, &git.CloneOptions{
                 URL:  repository,
-//                Auth: auth,
+                Auth: auth,
         })
 	
 	fmt.Println("addInGit   login in ok")
@@ -156,12 +161,12 @@ func addInGit() {
 
 	fmt.Println("addInGit   create new file")
         // Create new file
-        filePath := "my-new-ififif.txt"
+        filePath := "mipath/my-new-carlos002.txt"
         newFile, err := fs.Create(filePath)
         if err != nil {
                 return 
         }
-        newFile.Write([]byte("My new file carlos"))
+        newFile.Write([]byte("My new file carlos002"))
         newFile.Close()
 
         // Run git status before adding the file to the worktree
@@ -176,8 +181,25 @@ func addInGit() {
 
 	fmt.Println("addInGit   git commit")
         // git commit -m $message
-        w.Commit("Added my new file", &git.CommitOptions{})
+//        w.Commit("Added my new file", &git.CommitOptions{})
 
+	commit, err := w.Commit("example go-git commit", &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  "Carlos Z",
+			Email: "john@doe.org",
+			When:  time.Now(),
+		},
+	})
+
+	CheckIfError(err)
+
+	// Prints the current HEAD to verify that all worked well.
+	Info("git show -s")
+	obj, err := r.CommitObject(commit)
+
+	CheckIfError(err)
+
+        fmt.Println(obj)
 	
 	fmt.Println("addInGit   git push")
         //Push the code to the remote
@@ -228,4 +250,19 @@ func getAddFileGit(c *gin.Context) {
 
 	
         c.IndentedJSON(http.StatusOK, resultados)
+}
+
+// CheckIfError should be used to naively panics if an error is not nil.
+func CheckIfError(err error) {
+	if err == nil {
+		return
+	}
+
+	fmt.Printf("\x1b[31;1m%s\x1b[0m\n", fmt.Sprintf("error: %s", err))
+	os.Exit(1)
+}
+
+// Info should be used to describe the example commands that are about to run.
+func Info(format string, args ...interface{}) {
+	fmt.Printf("\x1b[34;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
 }
