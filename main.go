@@ -123,7 +123,7 @@ func getMultiplicaByID(c *gin.Context) {
 //func addInGit(filenombre string )  bolean{
 func addInGit() {
 	
-	fmt.Println("addInGit ict 6th-   delcare in memory")
+	fmt.Println("addInGit 7th  delcare in memory")
 	
         storer = memory.NewStorage()
         fs = memfs.New()
@@ -134,7 +134,9 @@ func addInGit() {
                 Username: "izendejass600@gmail.com",
 //                Password: "Impo",
 //                Password: "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",  
-                Password: "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", 
+//                Password: "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", 
+                Password: "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", 
+
 
         }
 
@@ -161,12 +163,12 @@ func addInGit() {
 
 	fmt.Println("addInGit   create new file")
         // Create new file
-        filePath := "mipath/my-new-carlos002.txt"
+        filePath := "mipath/my-new-carlos004.txt"
         newFile, err := fs.Create(filePath)
         if err != nil {
                 return 
         }
-        newFile.Write([]byte("My new file carlos002"))
+        newFile.Write([]byte("My new file carlos004"))
         newFile.Close()
 
         // Run git status before adding the file to the worktree
