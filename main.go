@@ -123,7 +123,7 @@ func getMultiplicaByID(c *gin.Context) {
 //func addInGit(filenombre string )  bolean{
 func addInGit() {
 	
-	fmt.Println("addInGit   delcare in memory")
+	fmt.Println("addInGit ict 6th-   delcare in memory")
 	
         storer = memory.NewStorage()
         fs = memfs.New()
