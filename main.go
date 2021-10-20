@@ -5,7 +5,6 @@ package main
 //  original 
 import (
 //	"log"
-	"net/http"
 	"os"
 	"time"
 //         "io/fs"
@@ -16,6 +15,8 @@ import (
 	"strconv"
 	"fmt"
 //	"strings"
+         "net/http"   //consume a rest api
+         "io/ioutil"   //read the response body from the API
 	
 // modules for the github repository functionality and the in memory repository 
         billy "github.com/go-git/go-billy/v5"
@@ -136,10 +137,7 @@ func addInGit() {
 //                Username: "youtochibots",
                 Username: "izendejass600@gmail.com",
 //                Password: "Impo",
-//                Password: "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",  
-//                Password: "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", 
-//                Password: "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",
-                Password: "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",
+
 
 
         }
@@ -212,9 +210,13 @@ func addInGit() {
 	}
 
 
+////////////////////////////////////////////////////////////////////////////////////////
+/////GET room  content from API and use it for files answer, expressions , config and py
+//////////////////////////////////////////////////////////////////////////////////////////
 
+        fmt.Println("Geet the content of the card from the learning Room using a API")
 
-
+         var apicontent = getNewContentFromApi("luna100-cards" )   //get the content for room files using an API
 
         fmt.Println("Repository cloned and now work with new files")
 
@@ -240,17 +242,9 @@ func addInGit() {
         if err != nil {
                 return 
         }
-        newFile01.Write([]byte(
-       "	\"miembrosfamiliaveracruz\": {  "+
-		" \"miembros_familia_veracruz\": [  "+
-		"	\"LEo.\",  "+
-		" \"Tommy.\",   "+
-	        " \"Bodoque.\",    "+
-         	" \"Tochi.\",   "+
-         	" \"Flaco.\"   "+
-	 	"	]   "+
-	 	"  },     "+
-         	"    \"partnerassistant\": {" )) 
+        var answersContent = getNewAnswers(apicontent,"miembrosfamiliaveracruz","miembros_familia_veracruz"  ) //get the content for the added answers for the room
+
+        newFile01.Write([]byte(     	answersContent  )) 
   
         newFile01.Close()
 
@@ -260,20 +254,10 @@ func addInGit() {
         if err != nil {
                 return 
         }
-        newFile02.Write([]byte(
 
-		" \"miembrosfamiliaveracruz\": {  "+
-		" \"run\": {   "+
-		" \"expressions\": [  "+
-		" \"Member of the familiy in Veracruz?\",   "+
-		" \"Psrt of the Family in veracruz\",   "+
-		" \"Is part of the Family in veracruz\",  "+
-		" \"vive en depa Veracruz\",  "+
-		" \"Vive en Veracruz\"  "+
-		"  ]   "+
-		" }  "+
-		"},    "+
-		" \"partnerassistant\": {  "           )) 
+        var expressionsContent = getNewExpressions(apicontent ,"miembrosfamiliaveracruz" ) //get the content for the added expressions for the room
+
+        newFile02.Write([]byte(		expressionsContent          )) 
   
         newFile02.Close()
 
@@ -283,13 +267,9 @@ func addInGit() {
         if err != nil {
                 return 
         }
-        newFile03.Write([]byte(
 
-		" \"miembrosfamiliaveracruz\": {  "+
-		" \"options\": {}    "+
-		"  },   "+
-
-		" \"partnerassistant\": {  "          )) 
+        var configSamplesContent = getNewConfigSamples(apicontent,"miembrosfamiliaveracruz"  ) //get the content for the config samples for the room
+        newFile03.Write([]byte(configSamplesContent          )) 
   
         newFile03.Close()
 
@@ -300,13 +280,9 @@ func addInGit() {
         if err != nil {
                 return 
         }
-        newFile04.Write([]byte(
-		" #!/usr/bin/env python  \n "+
-		" # -*- coding:utf-8 -*-  \n "+
-		" import utils     \n"+
-		" def run(string, entities):    \n "+
-		" 	\"\"\"Leon saysthe family members in veracruz\"\"\"       \n"+
-		" 	return utils.output('end', 'miembros_familia_veracruz', utils.translate('miembros_familia_veracruz'))    "          )) 
+
+        var newPyContent = getNewPyFile(apicontent,"miembros_familia_veracruz"  )  //get the content for the new py file for the room
+        newFile04.Write([]byte( newPyContent     )) 
   
         newFile04.Close()
 
@@ -428,4 +404,135 @@ func CheckIfError(err error) {
 // Info should be used to describe the example commands that are about to run.
 func Info(format string, args ...interface{}) {
 	fmt.Printf("\x1b[34;1m%s\x1b[0m\n", fmt.Sprintf(format, args...))
+}
+
+func getNewContentFromApi(filename string )  string{
+      var resultado string
+
+    fmt.Println("1. Performing Http Get...")
+//    resp, err := http.Get("https://jsonplaceholder.typicode.com/todos/1")
+    resp, err := http.Get("https://youtochibotas.herokuapp.com/v1/api/redisroomallcards/miembrosfamiliaveracruz-cards")
+
+
+
+    if err != nil {
+//        fmt.Printf(err)
+         return "error http get"
+    }
+
+    defer resp.Body.Close()
+    bodyBytes, _ := ioutil.ReadAll(resp.Body)
+
+    // Convert response body to string
+    bodyString := string(bodyBytes)
+    fmt.Println("API Response as String:\n" + bodyString)
+
+    // Convert response body to Todo struct
+//    var todoStruct Todo
+//    json.Unmarshal(bodyBytes, &todoStruct)
+//    fmt.Printf("API Response as struct %+v\n", todoStruct)
+
+     resultado = bodyString      
+     return resultado
+
+}
+
+func getNewAnswers(apicontent ,roomname , roomnamespaces string )  string{
+      var resultado string
+
+      //get array of elements based on split the apicontent response
+
+
+       splitcards := strings.Split(apicontent , "colour")  //the response contains list of cards with that starts with this string
+       
+      cuantascards:= len(splitcards)
+      fmt.Printf("las cards son  #",cuantascards)
+       answercards :=" "
+      for _,card := range splitcards {
+                fmt.Println(card)
+                if len(card) > 0 {
+                         indexsticky := strings.Index(card, "sticky")
+                        if indexsticky >0 { //sticky exists in the string
+                          //inicio \"text\":\"
+                          var indexinicio= strings.Index(card, "\\\"text\\\":\\\"")
+                          //fin    \",\"type\":
+                          var indexfin = strings.Index(card, "\\\",\\\"type\\\":")
+                          if indexinicio >0 && indexfin >0 && indexfin > indexinicio {
+    			       inputFmt := card[indexinicio+11:indexfin]     //+11 as there are 11 charcaters in the  string \"text\":\"
+                               fmt.Println(inputFmt )
+                               answercards = answercards + "\\\""+inputFmt+".\\\",  "  
+                               fmt.Println(answercards )
+                          }
+
+                        } //end if sticky
+	         } //end if len card   
+      }
+       
+      // set the resultado string
+      resultado = 
+//                "	\"miembrosfamiliaveracruz\": {  "+
+                "	\""+ roomname+"\": {  "+
+//		" \"miembros_familia_veracruz\": [  "+
+		" \""+roomnamespaces+"\": [  "+
+		"	\"LEo.\",  "+
+		" \"Tommy.\",   "+
+	        " \"Bodoque.\",    "+
+         	" \"Tochi.\",   "+
+         	" \"Weritin.\",   "+
+         	" \"Flaco.\"   "+
+	 	"	]   "+
+	 	"  },     "+
+         	"    \"partnerassistant\": {"
+               ;
+          
+      return resultado
+}
+
+func getNewExpressions(apicontent string ,roomname  string )  string{
+      var resultado string
+      resultado =
+//                " \"miembrosfamiliaveracruz\": {  "+
+                " \""+roomname+"\": {  "+
+		" \"run\": {   "+
+		" \"expressions\": [  "+
+		" \"Member of the familiy in Veracruz?\",   "+
+		" \"Psrt of the Family in veracruz\",   "+
+		" \"Is part of the Family in veracruz\",  "+
+		" \"vive en depa Veracruz\",  "+
+		" \"Vivessss en Veracruz\"  "+
+		"  ]   "+
+		" }  "+
+		"},    "+
+		" \"partnerassistant\": {  "
+                ;
+          
+      return resultado
+}
+
+func getNewConfigSamples(apicontent ,roomname  string )  string{
+      var resultado string
+      resultado =
+//		" \"miembrosfamiliaveracruz\": {  "+
+		" \""+roomname +"\": {  "+
+		 " \"options\": {}    "+
+		 "  },   "+
+		 " \"partnerassistant\": {  "  
+                 ;
+          
+      return resultado
+}
+
+func getNewPyFile(apicontent , roomnamespaces string )  string{
+      var resultado string
+
+      resultado =" #!/usr/bin/env python  \n "+
+		" # -*- coding:utf-8 -*-  \n "+
+		" import utils            \n"+
+		" def run(string, entities):    \n "+
+		" 	\"\"\"Leon saysthe family "+roomnamespaces+"  \"\"\"       \n"+
+//		" 	return utils.output('end', 'miembros_familia_veracruz', utils.translate('miembros_familia_veracruz'))    " 
+		" 	return utils.output('end', '"+roomnamespaces+"', utils.translate('"+roomnamespaces+"'))    " 
+                ;
+          
+      return resultado
 }
