@@ -57,9 +57,20 @@ func main() {
 	router.GET("v1/multiplica/:numero1/:numero2", getMultiplicaByID)
 	
 	router.GET("v2/addFileGit/:nombrearchivo/:numero2", getAddFileGit)
-	
-	router.Run(":" + port)
 
+	router.GET("v2/botcreateGit/:nombrebot", getBotCreateGit)
+
+	router.GET("v2/bottraintemaGit/:nombrebot/:nombretema", getBotTraingTemaGit)
+
+	router.GET("v2/botactivaGit/:nombrebot", getBotActivaGit)
+
+	router.GET("v2/botdatacreateGit/:nombredata/:urldatasource", getDataCreateGit)
+
+	router.GET("v2/botapicreateGit/:nombreapi/:nombredata", getApiCreateGit)	
+
+	router.GET("v2/botapitrainGit/:nombrebot/:nombreapi", getBotApiTrainGit)	
+
+	router.Run(":" + port)
 
 }
 //termin ortiginall
@@ -125,7 +136,7 @@ func getMultiplicaByID(c *gin.Context) {
 
 
 //func addInGit(filenombre string )  bolean{
-func addInGit() {
+func addInGit(roomname string ) {
 	
 	fmt.Println("addInGit 8th  delcare in memory")
 	
@@ -179,15 +190,38 @@ func addInGit() {
 
 	// ... get the files iterator and print the file
         var file001content string
+        var file002content string
+        var file003content string
+        var file004content string
 
 	tree.Files().ForEach(func(f *object.File) error {
 //		fmt.Printf("100644 blob %s    %s\n", f.Hash, f.Name)
                 if(f.Name =="packages/leon/data/answers/en.json" ){
-                    fmt.Println(" Oct 19 - file001 is set ")
+                    fmt.Println(" Oct 19 - file001 content is obtained ")
                     file001content, err= f.Contents()
 	          fmt.Printf(f.Contents())
 
                 }
+                if(f.Name =="packages/leon/data/expressions/en.json" ){
+                    fmt.Println(" Oct 19 - file002 content is obtained ")
+                    file002content, err= f.Contents()
+	          fmt.Printf(f.Contents())
+
+                }
+
+                if(f.Name =="packages/leon/config/config.sample.json" ){
+                    fmt.Println(" Oct 19 - file003 content is obtained ")
+                    file003content, err= f.Contents()
+	          fmt.Printf(f.Contents())
+
+                }
+                if(f.Name =="packages/leon/meaningoflife.py" ){
+                    fmt.Println(" Oct 19 - file004 content is obtained ")
+                    file004content, err= f.Contents()
+	          fmt.Printf(f.Contents())
+
+                }
+
 		return nil
 	})
 
@@ -213,6 +247,9 @@ func addInGit() {
 ////////////////////////////////////////////////////////////////////////////////////////
 /////GET room  content from API and use it for files answer, expressions , config and py
 //////////////////////////////////////////////////////////////////////////////////////////
+
+//        roomname := "miembrosfamiliaveracruz"
+//        roomname_ := "miembros_familia_veracruz"
 
         fmt.Println("Geet the content of the card from the learning Room using a API")
 
@@ -243,12 +280,16 @@ func addInGit() {
                 return 
         }
         var answersContent = getNewAnswers(apicontent,"miembrosfamiliaveracruz","miembros_familia_veracruz"  ) //get the content for the added answers for the room
+        resultsFile0010 := strings.Replace(file001content, "\"partnerassistant\": {", answersContent, -1) //use the file content obtained from github 
+                                                                                         //find the replaceable string
+                                                                                         //use the answersContent obtained from the api cards type sticky
+ 
 
-        newFile01.Write([]byte(     	answersContent  )) 
+        newFile01.Write([]byte(     	resultsFile0010   )) 
   
         newFile01.Close()
 
-        // Create new file  packages/leon/data/answers/en.json
+        // Create new file  packages/leon/data/expressions/en.json
         filePath02 := "packages/leon/data/expressions/en_json_2.txt"
         newFile02, err := fsmemory.Create(filePath02)
         if err != nil {
@@ -256,8 +297,11 @@ func addInGit() {
         }
 
         var expressionsContent = getNewExpressions(apicontent ,"miembrosfamiliaveracruz" ) //get the content for the added expressions for the room
-
-        newFile02.Write([]byte(		expressionsContent          )) 
+        resultsFile0011 := strings.Replace(file002content, "\"partnerassistant\": {", expressionsContent, -1) //use the file content obtained from github 
+                                                                                         //find the replaceable string
+                                                                                         //use the expressionsContent obtained from the api cards type card
+ 
+        newFile02.Write([]byte(		resultsFile0011          )) 
   
         newFile02.Close()
 
@@ -269,19 +313,26 @@ func addInGit() {
         }
 
         var configSamplesContent = getNewConfigSamples(apicontent,"miembrosfamiliaveracruz"  ) //get the content for the config samples for the room
-        newFile03.Write([]byte(configSamplesContent          )) 
+        resultsFile0012 := strings.Replace(file003content, "\"partnerassistant\": {", configSamplesContent , -1) //use the file content obtained from github 
+                                                                                         //find the replaceable string
+                                                                                         //use the  configSamplesContent
+
+        newFile03.Write([]byte(resultsFile0012          )) 
   
         newFile03.Close()
 
 
         // Create new file  packages/leon/meaningoflife.py
-        filePath04 := "packages/leon/meaningoflife_py_2.txt"
+//        filePath04 := "packages/leon/meaningoflife_py_2.txt"
+
+        filePath04 := "packages/leon/"+roomname+"_py_2.txt"    //roomname   "miembrosfamiliaveracruz"
         newFile04, err := fsmemory.Create(filePath04)
         if err != nil {
                 return 
         }
 
         var newPyContent = getNewPyFile(apicontent,"miembros_familia_veracruz"  )  //get the content for the new py file for the room
+
         newFile04.Write([]byte( newPyContent     )) 
   
         newFile04.Close()
@@ -374,8 +425,8 @@ func getAddFileGit(c *gin.Context) {
 	}
 //logic
 
-        addInGit()
-
+//        addInGit()
+        addInGit( elemento1)
 
 //prapre 	
 	resultado := s2final;
@@ -387,7 +438,6 @@ func getAddFileGit(c *gin.Context) {
 	d:=resultados[0].Resultado 
 	fmt.Println(d+"si")
 
-	
         c.IndentedJSON(http.StatusOK, resultados)
 }
 
@@ -449,7 +499,7 @@ func getNewAnswers(apicontent ,roomname , roomnamespaces string )  string{
       fmt.Printf("las cards son  #",cuantascards)
        answercards :=" "
       for _,card := range splitcards {
-                fmt.Println(card)
+//                fmt.Println(card)
                 if len(card) > 0 {
                          indexsticky := strings.Index(card, "sticky")
                         if indexsticky >0 { //sticky exists in the string
@@ -460,7 +510,7 @@ func getNewAnswers(apicontent ,roomname , roomnamespaces string )  string{
                           if indexinicio >0 && indexfin >0 && indexfin > indexinicio {
     			       inputFmt := card[indexinicio+11:indexfin]     //+11 as there are 11 charcaters in the  string \"text\":\"
                                fmt.Println(inputFmt )
-                               answercards = answercards + "\\\""+inputFmt+".\\\",  "  
+                               answercards = answercards + "\""+inputFmt+".\",  "  
                                fmt.Println(answercards )
                           }
 
@@ -474,11 +524,7 @@ func getNewAnswers(apicontent ,roomname , roomnamespaces string )  string{
                 "	\""+ roomname+"\": {  "+
 //		" \"miembros_familia_veracruz\": [  "+
 		" \""+roomnamespaces+"\": [  "+
-		"	\"LEo.\",  "+
-		" \"Tommy.\",   "+
-	        " \"Bodoque.\",    "+
-         	" \"Tochi.\",   "+
-         	" \"Weritin.\",   "+
+                           answercards  +   //value obtained fro the cards split each for type sticky
          	" \"Flaco.\"   "+
 	 	"	]   "+
 	 	"  },     "+
@@ -490,16 +536,41 @@ func getNewAnswers(apicontent ,roomname , roomnamespaces string )  string{
 
 func getNewExpressions(apicontent string ,roomname  string )  string{
       var resultado string
+
+      //get array of elements based on split the apicontent response
+
+
+       splitcards := strings.Split(apicontent , "colour")  //the response contains list of cards with that starts with this string
+       
+      cuantascards:= len(splitcards)
+      fmt.Printf("las cards son  #",cuantascards)
+       expressionscards :=" "
+      for _,card := range splitcards {
+//                fmt.Println(card)
+                if len(card) > 0 {
+                         indexcardtype := strings.Index(card, "type\\\":\\\"card") //check if the card has the type card for expressions (vs type sti¿cky for answers
+                        if indexcardtype >0 { //type card exists in the string
+                          //inicio \"text\":\"
+                          var indexinicio= strings.Index(card, "\\\"text\\\":\\\"")
+                          //fin    \",\"type\":
+                          var indexfin = strings.Index(card, "\\\",\\\"type\\\":")
+                          if indexinicio >0 && indexfin >0 && indexfin > indexinicio {
+    			       inputFmt := card[indexinicio+11:indexfin]     //+11 as there are 11 charcaters in the  string \"text\":\"
+                               fmt.Println(inputFmt )
+                               expressionscards = expressionscards + "\""+inputFmt+".\",  "  
+                               fmt.Println(expressionscards )
+                          }
+
+                        } //end if sticky
+	         } //end if len card   
+      }
+
       resultado =
-//                " \"miembrosfamiliaveracruz\": {  "+
+
                 " \""+roomname+"\": {  "+
 		" \"run\": {   "+
 		" \"expressions\": [  "+
-		" \"Member of the familiy in Veracruz?\",   "+
-		" \"Psrt of the Family in veracruz\",   "+
-		" \"Is part of the Family in veracruz\",  "+
-		" \"vive en depa Veracruz\",  "+
-		" \"Vivessss en Veracruz\"  "+
+                           expressionscards  +   //value obtained fro the cards split each
 		"  ]   "+
 		" }  "+
 		"},    "+
@@ -535,4 +606,214 @@ func getNewPyFile(apicontent , roomnamespaces string )  string{
                 ;
           
       return resultado
+}
+
+//section to define bot actions
+/*
+:nombrebot", getBotCreateGit
+/:nombrebot/:nombretema", getBotTraingTemaGit
+/:nombrebot", getBotActivaGit)
+/:nombredata/:urldatasource", getDataCreateGit)
+/:nombreapi/:nombredata", getApiCreateGit)
+/:nombrebot/:nombreapi", getBotApiTrainGit)
+*/
+
+
+// getBotCreateGit  crea un bot in the github repository 
+//responds with the stauts and the result as JSON.
+func getBotCreateGit(c *gin.Context) {
+	//REQUEST Process
+	 elementonombrebot := c.Param("nombrebot")
+		 
+       if elementonombrebot == ""  {
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = "second parameter is expected numeric";
+	        c.IndentedJSON(http.StatusOK, resultados)
+		return
+	}
+	//logic
+        botCreateGit( elementonombrebot)
+
+	//RESPONSE prepare 	
+	resultado := "OK";
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK"+elementonombrebot;
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
+	
+        c.IndentedJSON(http.StatusOK, resultados)
+}
+
+
+func botCreateGit(botname string ) {
+     return
+}
+
+// getBotTraingTemaGit  train un bot en un tema in the github repository 
+//responds with the stauts and the result as JSON.
+func getBotTraingTemaGit(c *gin.Context) {
+	//REQUEST Process
+	 elementonombrebot := c.Param("nombrebot")
+	 elementonombretema := c.Param("nombretema")		 
+       if elementonombrebot == ""  {
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = " parameter is numeric";
+	        c.IndentedJSON(http.StatusOK, resultados)
+		return
+	}
+	//logic
+        botTraingTemaGit( elementonombrebot,elementonombretema)
+
+	//RESPONSE prepare 	
+	resultado := "OK";
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK"+elementonombrebot;
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
+	
+        c.IndentedJSON(http.StatusOK, resultados)
+}
+
+
+func botTraingTemaGit(botname string, temaname string ) {
+     return
+}
+
+// getBotActivaGit  activa, deploya un bot desde un github repository 
+//responds with the stauts and the result as JSON.
+func getBotActivaGit(c *gin.Context) {
+	//REQUEST Process
+	 elementonombrebot := c.Param("nombrebot")	 
+       if elementonombrebot == ""  {
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = " parameter is numeric";
+	        c.IndentedJSON(http.StatusOK, resultados)
+		return
+	}
+	//logic
+        botActivaGit( elementonombrebot)
+
+	//RESPONSE prepare 	
+	resultado := "OK";
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK"+elementonombrebot;
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
+	
+        c.IndentedJSON(http.StatusOK, resultados)
+}
+
+
+func botActivaGit(botname string ) {
+     return
+}
+
+// getDataCreateGit  get data from source to our data source en una app desde un github repository 
+//responds with the stauts and the result as JSON.
+func getDataCreateGit(c *gin.Context) {
+	//REQUEST Process
+	 elementonombredatasource := c.Param("nombredata")
+	 elementourldatasource := c.Param("urldatasource")	 
+       if elementonombredatasource == ""  {
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = " parameter is numeric";
+	        c.IndentedJSON(http.StatusOK, resultados)
+		return
+	}
+	//logic
+        dataCreateGit( elementonombredatasource ,  elementourldatasource)
+
+	//RESPONSE prepare 	
+	resultado := "OK";
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK"+elementonombredatasource;
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
+	
+        c.IndentedJSON(http.StatusOK, resultados)
+}
+
+
+func dataCreateGit(dataname string, url string ) {
+     return
+}
+
+
+// getApiCreateGit  create api from our data source en una app desde un github repository 
+//responds with the stauts and the result as JSON.
+func getApiCreateGit(c *gin.Context) {
+	//REQUEST Process
+	 elementonombredatasource := c.Param("nombredata")
+	 elementonombreapi := c.Param("nombreapi")	 
+       if elementonombredatasource == ""  {
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = " parameter is numeric";
+	        c.IndentedJSON(http.StatusOK, resultados)
+		return
+	}
+	//logic
+        apiCreateGit( elementonombredatasource, elementonombreapi  )
+
+	//RESPONSE prepare 	
+	resultado := "OK";
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK"+elementonombredatasource;
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
+	
+        c.IndentedJSON(http.StatusOK, resultados)
+}
+
+
+func apiCreateGit(botname string, nameapi string ) {
+     return
+}
+
+
+// getBotApiTrainGit  train a bot using data obtained from one of our api  en una app desde un github repository 
+//responds with the stauts and the result as JSON.
+func getBotApiTrainGit(c *gin.Context) {
+	//REQUEST Process
+	 elementonombrebot := c.Param("nombrebot")
+	 elementonombreapi := c.Param("nombreapi")	 
+       if elementonombrebot == ""  {
+         	resultados[0].Status ="NOK";
+	        resultados[0].Resultado = " parameter is numeric";
+	        c.IndentedJSON(http.StatusOK, resultados)
+		return
+	}
+	//logic
+        botApiTrainGit( elementonombrebot , elementonombreapi)
+
+	//RESPONSE prepare 	
+	resultado := "OK";
+	 fmt.Println(resultado) 
+	sresultado := fmt.Sprintf("%f", resultado)
+	
+	resultados[0].Status ="OK"+elementonombrebot;
+	resultados[0].Resultado = sresultado
+	d:=resultados[0].Resultado 
+	fmt.Println(d+"si")
+	
+        c.IndentedJSON(http.StatusOK, resultados)
+}
+
+
+func botApiTrainGit(botname string, apiname string) {
+     return
 }
